@@ -1,0 +1,98 @@
+/*
+Basic Robot Grammar
+Author: Silvia Takahashi
+ **/
+
+options 
+{
+	LOOKAHEAD=1; 
+	IGNORE_CASE=true;
+	STATIC = false;
+	
+}
+   
+   
+PARSER_BEGIN(RobotParser)
+
+package uniandes.lym.robot.control;
+
+import uniandes.lym.robot.kernel.*;
+import java.io.*;
+
+
+@SuppressWarnings("serial")
+public class RobotParser 
+{
+
+
+	private RobotWorldDec robotw;
+	
+	
+	void setWorld(RobotWorld w) {
+		robotw = (RobotWorldDec) w;	
+	}
+
+    void delay(int d) {
+				try {
+	    			        Thread.sleep(d);
+	    			    } catch (InterruptedException e) {
+	    			        System.err.format("IOException: %s%n", e);
+	    			    }
+
+    }  
+	
+}
+PARSER_END(RobotParser)
+
+SKIP:
+{
+	" "
+	|	"\r"
+	|	"\t"
+}
+
+TOKEN: /* Command  names */
+{
+
+			<T_MOVE:  "Move">
+		| 	<T_TURNRIGHT: "TURNRIGHT">
+		| 	<T_PUTB: "PutB">
+		| 	<T_PICKB: "PickB">
+		| 	<T_PUTC: "PutC">
+		| 	<T_PICKC: "PickC">
+		
+
+}
+ 
+
+
+
+ 
+
+	boolean instructions(StringBuffer system) :
+	{	
+				String output=new String();
+		
+	}
+	{
+		(		  (
+		   <T_TURNRIGHT>  { robotw.turnRight();}
+		| 	<T_MOVE>  {robotw.moveForward(1) ;}  
+		|  <T_PUTB>  {robotw.putBalloons(1); }					  			
+		|  <T_PICKB> { robotw.grabBalloons(1) ;}
+		|  <T_PUTC>  {robotw.putChips(1); }					  			
+		|  <T_PICKC> { robotw.pickChips(1) ;}
+		)  
+  		"\n"
+  		{
+		  delay(1000);
+  		}
+		
+		)+
+		<EOF>
+		{  return true;}
+	}
+
+	
+
+	
